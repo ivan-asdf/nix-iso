@@ -3,11 +3,9 @@
 echo "--------------------------------------------------------------------------------"
 echo "Detected the following devices:"
 sudo lsblk -e7 -o name,size,model,serial
-# echo "Write name of device to install nixOS (WARNING!! WILL FORMAT DEVICE!!): "
 printf "\n"
 
 i=1
-#for device in $(sudo fdisk -l | grep "^Disk /dev" | awk "{print \$2}" | sed "s/://"); do
 for device in $(lsblk -o path,type | grep disk | awk "{print \$1}"); do
     echo "[$i] $device"
     i=$((i+1))
@@ -18,12 +16,11 @@ echo
 read -p "Which device do you wish to install on? " DEVICE
 
 DEV=${DEVICES[$(($DEVICE+1))]}
-echo $DEV
 
-ram_kB=$(cat /proc/meminfo | grep MemTotal | awk '{print $2}')
-SWAP_SIZE=$((ram_kB + 2* 1000 * 1000)) # ram size + 2GB
+RAM_SIZE=$(cat /proc/meminfo | grep MemTotal | awk '{print $2}') # in kB
+SWAP_SIZE=$((RAM_SIZE + 2 * 1024 * 1024)) # ram size + 2GB
 
-( echo g # new gpt partition table echo n # new partition
+( echo g # new gpt partition table
 
   echo n # new partition
   echo   # default first partition
@@ -36,7 +33,7 @@ SWAP_SIZE=$((ram_kB + 2* 1000 * 1000)) # ram size + 2GB
   echo +${SWAP_SIZE}kB # swap parititon size
 
   echo n # new partition
-  echo   # default second partition
+  echo   # default third partition
   echo   # default start sector
   echo   # default end sector till end of disk (this is root parition)
 
@@ -44,3 +41,19 @@ SWAP_SIZE=$((ram_kB + 2* 1000 * 1000)) # ram size + 2GB
 
   echo w # write changes
 ) | sudo fdisk ${DEV}
+
+BOOT_PART=${DEV}1 #/dev/sdX1
+SWAP_PART=${DEV}2 #/dev/sdX2
+ROOT_PART=${DEV}3 #/dev/sdX3
+
+echo "making filesystem on ${BOOT_PART}..."
+mkfs.fat -F 32 -n boot $BOOT_PART
+echo "making filesystem on ${SWAP_PART}..."
+mkswap -L swap $SWAP_PART
+echo "making filesystem on ${ROOT_PART}..."
+mkfs.ext4 -L nixos $ROOT_PART
+
+echo "mountings filesystems..."
+mount $ROOT_PART /mnt
+mount $BOOT_PART /mnt/boot
+swapon $SWAP_PART
