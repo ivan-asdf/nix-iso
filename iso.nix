@@ -13,6 +13,6 @@ in {
   ];
 
 
-  environment.systemPackages = [ install_script ];
+  environment.systemPackages = [ install_script pkgs.git ];
 }
 

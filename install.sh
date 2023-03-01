@@ -47,13 +47,24 @@ SWAP_PART=${DEV}2 #/dev/sdX2
 ROOT_PART=${DEV}3 #/dev/sdX3
 
 echo "making filesystem on ${BOOT_PART}..."
-mkfs.fat -F 32 -n boot $BOOT_PART
+sudo mkfs.fat -F 32 -n boot $BOOT_PART
 echo "making filesystem on ${SWAP_PART}..."
-mkswap -L swap $SWAP_PART
+sudo mkswap -L swap $SWAP_PART
 echo "making filesystem on ${ROOT_PART}..."
-mkfs.ext4 -L nixos $ROOT_PART
+sudo mkfs.ext4 -L nixos $ROOT_PART
 
 echo "mountings filesystems..."
-mount $ROOT_PART /mnt
-mount $BOOT_PART /mnt/boot
-swapon $SWAP_PART
+sudo mount $ROOT_PART /mnt
+sudo mkdir /mnt/boot
+sudo mount $BOOT_PART /mnt/boot
+sudo swapon $SWAP_PART
+
+nixos-generate-config --root /mnt
+
+git clone git@github.com:ivan-asdf/.nix-config.git
+
+sudo cp .nix-config/system/configuration.nix /mnt/etc/nixos/configuration.nix
+
+nix-install
+
+cp .nix-config /mnt/home/ivan/
