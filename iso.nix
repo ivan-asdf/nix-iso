@@ -1,12 +1,8 @@
-
-
 # This module defines a small NixOS installation CD.  It does not
 # contain any graphical stuff.
 { config, pkgs, ... }:
 let
-    helloWorld = pkgs.writeShellScriptBin "helloWorld" ''
-    echo Hello World
-    '';
+    install_script = pkgs.writeShellScriptBin "install.sh" (builtins.readFile ./install.sh);
 in {
   imports = [
     <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
@@ -17,6 +13,6 @@ in {
   ];
 
 
-  environment.systemPackages = [ helloWorld ];
+  environment.systemPackages = [ install_script ];
 }
 

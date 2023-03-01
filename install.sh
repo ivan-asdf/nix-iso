@@ -21,5 +21,26 @@ DEV=${DEVICES[$(($DEVICE+1))]}
 echo $DEV
 
 ram_kB=$(cat /proc/meminfo | grep MemTotal | awk '{print $2}')
+SWAP_SIZE=$((ram_kB + 2* 1000 * 1000)) # ram size + 2GB
 
+( echo g # new gpt partition table echo n # new partition
 
+  echo n # new partition
+  echo   # default first partition
+  echo   # default start sector
+  echo +512M # 512MB efi partition
+
+  echo n # new partition
+  echo   # default second partition
+  echo   # default start sector
+  echo +${SWAP_SIZE}kB # swap parititon size
+
+  echo n # new partition
+  echo   # default second partition
+  echo   # default start sector
+  echo   # default end sector till end of disk (this is root parition)
+
+  echo p # print layout
+
+  echo w # write changes
+) | sudo fdisk ${DEV}
