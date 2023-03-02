@@ -35,6 +35,18 @@ SWAP_SIZE=$((RAM_SIZE + 2 * 1024 * 1024)) # ram size + 2GB
   echo   # default third partition
   echo   # default start sector
   echo   # default end sector till end of disk (this is root parition)
+  
+  echo t # set type
+  echo 1 # first partition
+  echo 1 # EFI System
+  
+  echo t # set type
+  echo 2 # second partition
+  echo 19 # Linux swap
+  
+  echo t # set type
+  echo 3 # third partition
+  echo 20 # Linux Filesystem
 
   echo p # print layout
 
@@ -59,7 +71,6 @@ sudo mount $BOOT_PART /mnt/boot
 sudo swapon $SWAP_PART
 
 sudo nixos-generate-config --root /mnt
-
 
 MY_NIX_CONFIG_PATH=${NIX_CONFIG_DIR}/system/configuration.nix
 STANDART_NIX_CONFIG_PATH=/mnt/etc/nixos/configuration.nix
