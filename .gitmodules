@@ -1,0 +1,3 @@
+[submodule "nix-config"]
+	path = nix-config
+	url = git@github.com:ivan-asdf/.nix-config.git

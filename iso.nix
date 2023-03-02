@@ -1,9 +1,18 @@
 # This module defines a small NixOS installation CD.  It does not
 # contain any graphical stuff.
-{ config, pkgs, ... }:
+{ config, pkgs, stdenv, ... }:
 let
-    install_script = pkgs.writeShellScriptBin "install.sh" (builtins.readFile ./install.sh);
-in {
+  install_script = pkgs.writeShellScriptBin "install.sh" ''
+    NIX_CONFIG_DIR=${nix-config}
+    ${builtins.readFile ./install.sh}
+    '';
+  nix-config = pkgs.stdenv.mkDerivation {
+    name = "nix-config";
+    src = ./nix-config;
+    installPhase = "cp -r $src $out";
+  };
+in
+{
   imports = [
     <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
 
@@ -13,6 +22,6 @@ in {
   ];
 
 
-  environment.systemPackages = [ install_script pkgs.git ];
+  environment.systemPackages = [ nix-config install_script pkgs.git ];
 }
 

@@ -1,5 +1,3 @@
-#!/bin/sh
-
 echo "--------------------------------------------------------------------------------"
 echo "Detected the following devices:"
 sudo lsblk -e7 -o name,size,model,serial
@@ -59,12 +57,11 @@ sudo mkdir /mnt/boot
 sudo mount $BOOT_PART /mnt/boot
 sudo swapon $SWAP_PART
 
-nixos-generate-config --root /mnt
+sudo nixos-generate-config --root /mnt
 
-git clone git@github.com:ivan-asdf/.nix-config.git
 
-sudo cp .nix-config/system/configuration.nix /mnt/etc/nixos/configuration.nix
+sudo cp ${NIX_CONFIG_DIR}/system/configuration.nix /mnt/etc/nixos/configuration.nix
 
-nix-install
+sudo nixos-install
 
-cp .nix-config /mnt/home/ivan/
+sudo cp ${NIX_CONFIG_DIR} /mnt/home/ivan/
