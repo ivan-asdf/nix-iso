@@ -13,11 +13,15 @@ done
 
 echo
 read -p "Which device do you wish to install on? " DEVICE
-
 DEV=${DEVICES[$(($DEVICE+1))]}
 
-RAM_SIZE=$(cat /proc/meminfo | grep MemTotal | awk '{print $2}') # in kB
-SWAP_SIZE=$((RAM_SIZE + 2 * 1024 * 1024)) # ram size + 2GB
+sudo lsblk -e7 -o name,size,model,serial $DEV
+echo "ARE YOU SURE YOU WANT TO FORMAT THIS DEVICE? ALL DATA WILL BE LOST!!!"
+read -p 'Type "confirm" to procede: ' ANSWER
+
+if [ "$ANSWER" = "confirm" ]; then
+  RAM_SIZE=$(cat /proc/meminfo | grep MemTotal | awk '{print $2}') # in kB
+  SWAP_SIZE=$((RAM_SIZE + 2 * 1024 * 1024)) # ram size + 2GB
 
 ( echo g # new gpt partition table
 
@@ -52,6 +56,10 @@ SWAP_SIZE=$((RAM_SIZE + 2 * 1024 * 1024)) # ram size + 2GB
 
   echo w # write changes
 ) | sudo fdisk ${DEV}
+else
+  echo "cancelled."
+  exit
+fi
 
 BOOT_PART=${DEV}1 #/dev/sdX1
 SWAP_PART=${DEV}2 #/dev/sdX2
@@ -70,16 +78,8 @@ sudo mkdir /mnt/boot
 sudo mount $BOOT_PART /mnt/boot
 sudo swapon $SWAP_PART
 
-#sudo nixos-generate-config --root /mnt
-
-#MY_NIX_CONFIG_PATH=${NIX_CONFIG_DIR}/system/configuration.nix
-#STANDART_NIX_CONFIG_PATH=/mnt/etc/nixos/configuration.nix
-#echo "copying ${MY_NIX_CONFIG_PATH} to ${STANDART_NIX_CONFIG_PATH}"
-#sudo cp $MY_NIX_CONFIG_PATH $STANDART_NIX_CONFIG_PATH
-#
-
 STANDART_NIX_CONFIG_DIR=/mnt/etc/nixos
-sudo mkdir $STANDART_NIX_CONFIG_DIR
+sudo mkdir -p $STANDART_NIX_CONFIG_DIR
 echo "copying ${NIX_CONFIG_PATH} to ${STANDART_NIX_CONFIG_DIR}"
 sudo cp -r ${NIX_CONFIG_DIR}/system/* ${STANDART_NIX_CONFIG_DIR}
 
@@ -94,6 +94,7 @@ set -o errexit
 
 nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
 nix-channel --update
+nix-shell '<home-manager>' -A install
 
 SCRIPT_DIR=$(dirname "$0")
 
