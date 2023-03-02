@@ -64,8 +64,8 @@ sudo nixos-generate-config --root /mnt
 MY_NIX_CONFIG_PATH=${NIX_CONFIG_DIR}/system/configuration.nix
 STANDART_NIX_CONFIG_PATH=/mnt/etc/nixos/configuration.nix
 echo "copying ${MY_NIX_CONFIG_PATH} to ${STANDART_NIX_CONFIG_PATH}"
-sudo cp $MY_NIX_CONFIG_PATH $CURRENT_NIX_CONFIG_PATH
+sudo cp $MY_NIX_CONFIG_PATH $STANDART_NIX_CONFIG_PATH
 
 sudo nixos-install
 
-sudo cp ${NIX_CONFIG_DIR} /mnt/home/ivan/
+sudo cp -r ${NIX_CONFIG_DIR} /mnt/home/ivan/
