@@ -89,14 +89,18 @@ sudo cp -r ${NIX_CONFIG_DIR} /mnt/home/ivan/.nix-config
 
 # Install a home manager bootstrap script along with config from iso
 BOOTSTRAP_SCRIPT=/mnt/home/ivan/bootstrap_hm.sh
-cat > $BOOTSTRAP_SCRIPT << EOF
+echo '
 set -o errexit
+
+nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+nix-channel --update
+
 SCRIPT_DIR=$(dirname "$0")
 
-home-manager switch -f ${SCRIPT_DIR}/nix-config/home/home.nix
+home-manager switch -f ${SCRIPT_DIR}/.nix-config/home/home.nix
 
 # Delete iso nix-config from home directory leaving with fresh-installed OS
-rm -rf ${SCRIPT_DIR}/nix-config
-rm ${SCRIPT_DIR}/bootstrap_hm.sh
-EOF
+sudo rm -rf ${SCRIPT_DIR}/.nix-config
+sudo rm ${SCRIPT_DIR}/bootstrap_hm.sh' >  $BOOTSTRAP_SCRIPT
+
 sudo chmod a+x $BOOTSTRAP_SCRIPT
