@@ -77,9 +77,11 @@ sudo swapon $SWAP_PART
 #echo "copying ${MY_NIX_CONFIG_PATH} to ${STANDART_NIX_CONFIG_PATH}"
 #sudo cp $MY_NIX_CONFIG_PATH $STANDART_NIX_CONFIG_PATH
 #
-STANDART_NIX_CONFIG_PATH=/mnt/etc/nixos
+
+STANDART_NIX_CONFIG_DIR=/mnt/etc/nixos
+sudo mkdir $STANDART_NIX_CONFIG_DIR
 echo "copying ${NIX_CONFIG_PATH} to ${STANDART_NIX_CONFIG_DIR}"
-sudo cp -r ${NIX_CONFIG_DIR} ${STANDART_NIX_CONFIG_DIR}
+sudo cp -r ${NIX_CONFIG_DIR}/system/* ${STANDART_NIX_CONFIG_DIR}
 
 sudo nixos-install
 
