@@ -1,3 +1,4 @@
+set -o errexit
 echo "--------------------------------------------------------------------------------"
 echo "Detected the following devices:"
 sudo lsblk -e7 -o name,size,model,serial
