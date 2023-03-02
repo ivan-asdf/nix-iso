@@ -70,12 +70,16 @@ sudo mkdir /mnt/boot
 sudo mount $BOOT_PART /mnt/boot
 sudo swapon $SWAP_PART
 
-sudo nixos-generate-config --root /mnt
+#sudo nixos-generate-config --root /mnt
 
-MY_NIX_CONFIG_PATH=${NIX_CONFIG_DIR}/system/configuration.nix
-STANDART_NIX_CONFIG_PATH=/mnt/etc/nixos/configuration.nix
-echo "copying ${MY_NIX_CONFIG_PATH} to ${STANDART_NIX_CONFIG_PATH}"
-sudo cp $MY_NIX_CONFIG_PATH $STANDART_NIX_CONFIG_PATH
+#MY_NIX_CONFIG_PATH=${NIX_CONFIG_DIR}/system/configuration.nix
+#STANDART_NIX_CONFIG_PATH=/mnt/etc/nixos/configuration.nix
+#echo "copying ${MY_NIX_CONFIG_PATH} to ${STANDART_NIX_CONFIG_PATH}"
+#sudo cp $MY_NIX_CONFIG_PATH $STANDART_NIX_CONFIG_PATH
+#
+STANDART_NIX_CONFIG_PATH=/mnt/etc/nixos
+echo "copying ${NIX_CONFIG_PATH} to ${STANDART_NIX_CONFIG_DIR}"
+sudo cp -r ${NIX_CONFIG_DIR} ${STANDART_NIX_CONFIG_DIR}
 
 sudo nixos-install
 
