@@ -79,4 +79,18 @@ sudo cp $MY_NIX_CONFIG_PATH $STANDART_NIX_CONFIG_PATH
 
 sudo nixos-install
 
-sudo cp -r ${NIX_CONFIG_DIR} /mnt/home/ivan/
+sudo cp -r ${NIX_CONFIG_DIR} /mnt/home/ivan/.nix-config
+
+# Install a home manager bootstrap script along with config from iso
+BOOTSTRAP_SCRIPT=/mnt/home/ivan/bootstrap_hm.sh
+cat > $BOOTSTRAP_SCRIPT << EOF
+set -o errexit
+SCRIPT_DIR=$(dirname "$0")
+
+home-manager switch -f ${SCRIPT_DIR}/nix-config/home/home.nix
+
+# Delete iso nix-config from home directory leaving with fresh-installed OS
+rm -rf ${SCRIPT_DIR}/nix-config
+rm ${SCRIPT_DIR}/bootstrap_hm.sh
+EOF
+sudo chmod a+x $BOOTSTRAP_SCRIPT
